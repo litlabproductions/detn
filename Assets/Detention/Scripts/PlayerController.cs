@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class PlayerController : MonoBehaviour
+
+public class PlayerController : MonoBehaviourPunCallbacks
 {
     public Rigidbody rb;                // Handles player physics
     public float moveSpeed;
@@ -19,24 +21,31 @@ public class PlayerController : MonoBehaviour
 
     public int currentDirection = 1;   // Start in right direction
 
+    PhotonView view;
+
     // Called ONCE, before the first Update() is called
-    void Start(){}
+    void Start(){
+        view = GetComponent<PhotonView>();
+    }
 
     // Called once per frame (60 times / Sec)
     void Update()
     {
-        GetUserInput();
-        MovePlayer();
-        HandleJumping();
-        SetCurrentPosition();
-        
-        // Flip sprites if direction is 3 (Left)
-        if (currentDirection == 3)
-            sr.flipX = true;
-        else
-            sr.flipX = false;
+        if (photonView.IsMine)
+        {
+            GetUserInput();
+            MovePlayer();
+            HandleJumping();
+            SetCurrentPosition();
 
-        UpdateAnimator();
+            // Flip sprites if direction is 3 (Left)
+            if (currentDirection == 3)
+                sr.flipX = true;
+            else
+                sr.flipX = false;
+
+            UpdateAnimator();
+        }
     }
 
     void GetUserInput()
